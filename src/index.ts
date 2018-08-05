@@ -30,4 +30,4 @@ class App {
 }
 
 const app = new App();
-app.start(3000);
+app.start(process.env.PORT ? parseInt(process.env.PORT, 10) : 3000);
