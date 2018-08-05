@@ -39,7 +39,8 @@ export default class Logentries {
 
   static groomTrace(stacktrace: string[]): ErrorMeta['backtrace'] {
     const outFilters = [
-      /vendor\/bundle/
+      /vendor\/bundle/,
+      /\.gems/
     ];
 
     return stacktrace.filter(trace => !outFilters.some(filter => filter.test(trace)));
