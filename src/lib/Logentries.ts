@@ -21,12 +21,7 @@ export default class Logentries {
   static getUserBehaviourMeta(messageHash: MessageHash): UserBehaviourMeta {
     const resultRawMsgPattern = /(?<result>[^\{]+)(?<resultTrace>\{.+\})?/;
     const resultMeta: RegExpMatchExtended | null = messageHash.message.match(resultRawMsgPattern);
-    const actionMeta = {
-      companyID: messageHash.properties.company_id,
-      userID: messageHash.properties.user_id,
-      action: messageHash.properties.method,
-      actionPage: messageHash.properties.path,
-    }
+    const actionMeta = messageHash.properties
 
     if (!resultMeta) return actionMeta;
     return { ...actionMeta, ...resultMeta.groups };
@@ -56,12 +51,7 @@ export interface PayloadMeta {
 }
 
 export interface UserBehaviourMeta {
-  companyID: string;
-  userID: string;
-  action: string;
-  actionPage: string;
-  result?: string;
-  resultTrace?: string;
+  [key: string]: string;
 }
 
 export interface ErrorMeta {
@@ -80,10 +70,7 @@ export interface Payload {
 export interface MessageHash {
   message: string;
   properties: {
-    company_id: string;
-    user_id: string;
-    method: string;
-    path: string;
+    [key: string]: string;
   };
   error?: {
     type: string;

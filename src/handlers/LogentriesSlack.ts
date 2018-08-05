@@ -37,19 +37,25 @@ export default class LogentriesSlack {
   }
 
   private toSlackMessage(): SlackMessage {
-    const userAction = `[${this.logentries.userBehaviourMeta.action}] ${this.logentries.userBehaviourMeta.actionPage}`;
     const userBehaviour: Attachment = {
-      author_name: `Company ID: c${this.logentries.userBehaviourMeta.companyID}; User ID: ${this.logentries.userBehaviourMeta.userID}`,
-      title: this.logentries.userBehaviourMeta.action ? userAction : ''
+      title: 'User Behaviour Log'
     };
 
     if (this.logentries.userBehaviourMeta.result) {
+      const { result, resultTrace, ...otherProperties } = this.logentries.userBehaviourMeta;
       userBehaviour.fields = [];
-      userBehaviour.fields.push({
-        title: this.logentries.userBehaviourMeta.result,
-        value: this.logentries.userBehaviourMeta.resultTrace || '',
+
+      const otherFields = Object.entries(otherProperties).map((otherPropertiesMeta: string[]) => ({
+        title: otherPropertiesMeta[0],
+        value: otherPropertiesMeta[1],
         short: false
-      });
+      }));
+
+      userBehaviour.fields.push({
+        title: result,
+        value: resultTrace || '',
+        short: false
+      }, ...otherFields);
     }
 
     const slackMessage: SlackMessage = {
@@ -64,7 +70,7 @@ export default class LogentriesSlack {
         title: `Error Message: ${this.logentries.errorMeta.message}`,
       }
 
-      slackMessage.text = `\`\`\`${this.logentries.errorMeta.backtrace.join('\n')}\`\`\``;
+      slackMessage.text = `*Stacktrace*\n${this.logentries.errorMeta.backtrace.join('\n')}`;
       slackMessage.attachments = slackMessage.attachments || [];
       slackMessage.attachments.push(errorDetails);
     }

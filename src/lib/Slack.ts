@@ -37,8 +37,8 @@ export interface Field {
 }
 
 export interface Attachment {
-  author_name: string;
   title: string;
+  author_name?: string;
   fields?: Field[];
 }
 
