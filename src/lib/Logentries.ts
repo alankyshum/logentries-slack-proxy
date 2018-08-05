@@ -4,12 +4,12 @@ export default class Logentries {
   userBehaviourMeta: UserBehaviourMeta;
   errorMeta: ErrorMeta | null;
 
-  constructor(payload: Payload) {
+  constructor(payload: Payload, filters: RegExp[]) {
     const messageHash = JSON.parse(payload.event.m);
     this.serviceName = messageHash.properties.service;
     this.payloadMeta = Logentries.getPayloadMeta(payload);
     this.userBehaviourMeta = Logentries.getUserBehaviourMeta(messageHash);
-    this.errorMeta = Logentries.getErrorMeta(messageHash);
+    this.errorMeta = Logentries.getErrorMeta(messageHash, filters);
   }
 
   static getPayloadMeta(payload: Payload): PayloadMeta {
@@ -27,22 +27,17 @@ export default class Logentries {
     return { ...actionMeta, ...resultMeta.groups };
   }
 
-  static getErrorMeta(messageHash: MessageHash): ErrorMeta | null {
+  static getErrorMeta(messageHash: MessageHash, filters: RegExp[]): ErrorMeta | null {
     if (!messageHash.error) return null;
 
     return {
       type: messageHash.error.type,
       message: messageHash.error.message,
-      backtrace: Logentries.groomTrace(messageHash.error.backtrace)
+      backtrace: Logentries.groomTrace(messageHash.error.backtrace, filters)
     }
   }
 
-  static groomTrace(stacktrace: string[]): ErrorMeta['backtrace'] {
-    const outFilters = [
-      /vendor\/bundle/,
-      /\.gems/
-    ];
-
+  static groomTrace(stacktrace: string[], outFilters: RegExp[]): ErrorMeta['backtrace'] {
     return stacktrace.filter(trace => !outFilters.some(filter => filter.test(trace)));
   }
 }

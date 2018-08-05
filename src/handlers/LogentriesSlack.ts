@@ -6,9 +6,14 @@ import Debug, { AsyncMessage } from '../lib/Debug';
 export default class LogentriesSlack {
   logentries: Logentries;
   slack: Slack;
+  messageOutFilters: RegExp[];
 
   constructor(logentriesPayload: Payload, slackConfig: SlackConfig) {
-    this.logentries = new Logentries(logentriesPayload);
+    this.messageOutFilters = [
+      /vendor\/bundle|\.gems/g,
+    ];
+
+    this.logentries = new Logentries(logentriesPayload, this.messageOutFilters);
     this.slack = new Slack(slackConfig);
   }
 
