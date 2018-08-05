@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon --exec ./node_modules/.bin/ts-node -- ./src/index.ts",
-    "build": "tsc",
+    "build": "node_modules/typescript/bin/tsc",
     "start": "npm run build && node dist/index.js"
   },
   "author": "Alan Shum",
