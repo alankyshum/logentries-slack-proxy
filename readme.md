@@ -88,3 +88,6 @@ npm run dev # monitors change of files --> build
 
 ## TODOs
 - [ ] Package the modules in `/lib` as npm package
+- [ ] Supplying message filter out regex to webhook url, just like `slack_webhook` param
+- [ ] Filter out unrelated properties
+- [ ] Set logentries URL with correlation-id
