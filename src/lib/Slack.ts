@@ -46,4 +46,5 @@ export interface SlackMessage {
   username: string;
   ts: number;
   attachments?: Attachment[];
+  text?: string;
 }

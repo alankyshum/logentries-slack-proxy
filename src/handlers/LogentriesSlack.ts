@@ -37,9 +37,10 @@ export default class LogentriesSlack {
   }
 
   private toSlackMessage(): SlackMessage {
+    const userAction = `[${this.logentries.userBehaviourMeta.action}] ${this.logentries.userBehaviourMeta.actionPage}`;
     const userBehaviour: Attachment = {
-      author_name: `Company ID: \`c${this.logentries.userBehaviourMeta.companyID}\`; User ID: \`${this.logentries.userBehaviourMeta.userID}\``,
-      title: `[${this.logentries.userBehaviourMeta.action}] ${this.logentries.userBehaviourMeta.actionPage}`
+      author_name: `Company ID: c${this.logentries.userBehaviourMeta.companyID}; User ID: ${this.logentries.userBehaviourMeta.userID}`,
+      title: this.logentries.userBehaviourMeta.action ? userAction : ''
     };
 
     if (this.logentries.userBehaviourMeta.result) {
@@ -51,7 +52,7 @@ export default class LogentriesSlack {
       });
     }
 
-    const slackMessage = {
+    const slackMessage: SlackMessage = {
       username: this.logentries.serviceName,
       ts: this.logentries.payloadMeta.timestamp,
       attachments: [userBehaviour]
@@ -59,15 +60,12 @@ export default class LogentriesSlack {
 
     if (this.logentries.errorMeta) {
       const errorDetails: Attachment = {
-        author_name: this.logentries.errorMeta.type,
-        title: this.logentries.errorMeta.message,
-        fields: [{
-          title: 'Backtrace',
-          value: this.logentries.errorMeta.backtrace.join('\n'),
-          short: false
-        }]
+        author_name: `Error Type: ${this.logentries.errorMeta.type}`,
+        title: `Error Message: ${this.logentries.errorMeta.message}`,
       }
 
+      slackMessage.text = `\`\`\`${this.logentries.errorMeta.backtrace.join('\n')}\`\`\``;
+      slackMessage.attachments = slackMessage.attachments || [];
       slackMessage.attachments.push(errorDetails);
     }
 
